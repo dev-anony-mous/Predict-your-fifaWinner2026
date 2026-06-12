@@ -1,0 +1,38 @@
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; }
+::selection { background: #c0892b; color: #fff; }
+
+@keyframes p26up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes p26pop {
+  0%   { transform: scale(.7); opacity: 0; }
+  60%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.p26-anim-up  { animation: p26up  .5s ease both; }
+.p26-anim-up-fast { animation: p26up .4s ease both; }
+.p26-anim-pop { animation: p26pop .5s ease both; }
+.p26-anim-pop-slow { animation: p26pop .6s ease both; }
+
+.p26-scroll::-webkit-scrollbar        { height: 10px; }
+.p26-scroll::-webkit-scrollbar-track  { background: transparent; }
+.p26-scroll::-webkit-scrollbar-thumb  { background: #d8c79e; border-radius: 8px; }
+
+.p26-card-hover {
+  transition: transform .15s, border-color .15s;
+  cursor: pointer;
+}
+.p26-card-hover:hover {
+  transform: translateY(-3px);
+  border-color: #c0892b !important;
+}
+
+.p26-row-hover { transition: all .15s; }
+
+.p26-btn { transition: opacity .15s; cursor: pointer; }
+.p26-btn:hover { opacity: .85; }
+
+.p26-step { transition: background .15s; }

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=Roboto+Condensed:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  ::selection{background:#c0892b;color:#fff;}
+  .p26-scroll::-webkit-scrollbar{height:10px;}
+  .p26-scroll::-webkit-scrollbar-thumb{background:#d8c79e;border-radius:8px;}
+  @keyframes p26up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @keyframes p26pop{0%{transform:scale(.7);opacity:0;}60%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+</style>
+</helmet>
+<div style="min-height:100vh; background:#efe8d9; font-family:'Roboto Condensed',sans-serif; color:#1b1d24;">
+
+  <!-- ===================== TOP NAV ===================== -->
+  <div style="position:sticky; top:0; z-index:50; background:rgba(239,232,217,.92); backdrop-filter:blur(8px); border-bottom:1px solid #e2d6bd;">
+    <div style="max-width:1300px; margin:0 auto; padding:12px 22px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+      <div onClick="{{ onBrand }}" style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:21px; letter-spacing:-.01em; cursor:pointer; white-space:nowrap;">PREDICT <span style="color:#c0892b;">26</span></div>
+      <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; flex:1;">
+        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="5">
+          <div onClick="{{ st.onClick }}" style="{{ st.style }}">
+            <span style="{{ st.numStyle }}">{{ st.n }}</span>
+            <span style="{{ st.labelStyle }}">{{ st.label }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <sc-if value="{{ hasName }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex; align-items:center; gap:7px; background:#fff; border:1px solid #e2d6bd; border-radius:20px; padding:4px 5px 4px 13px; white-space:nowrap;">
+            <span style="font-size:13px; color:#8a8170; white-space:nowrap;">Playing as</span>
+            <span style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:13px; color:#1b1d24;">{{ name }}</span>
+          </div>
+        </sc-if>
+        <div onClick="{{ onRestart }}" title="Start over" style="width:32px; height:32px; border-radius:50%; background:#fff; border:1px solid #e2d6bd; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; color:#8a8170;">↺</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== WELCOME ===================== -->
+  <sc-if value="{{ isWelcome }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:980px; margin:0 auto; padding:60px 24px 90px; text-align:center; animation:p26up .5s ease both;">
+      <div style="font-family:'Roboto Condensed'; font-size:12px; letter-spacing:.32em; color:#b08a3a; font-weight:700;">WORLD CUP 2026 · CANADA · MEXICO · USA</div>
+      <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:84px; line-height:.92; margin-top:16px; letter-spacing:-.02em;">PREDICT <span style="color:#c0892b;">26</span></div>
+      <div style="font-size:20px; color:#6a6256; margin-top:14px;">Call every match. Build your bracket. Crown your champion.</div>
+
+      <div style="display:inline-flex; align-items:center; gap:8px; background:#fff; border:1px solid #e2d8c2; border-radius:14px; padding:7px 7px 7px 8px; margin-top:32px; box-shadow:0 8px 24px rgba(0,0,0,.06);">
+        <span style="font-size:18px; padding-left:8px;">👤</span>
+        <input value="{{ nameInput }}" onInput="{{ onName }}" placeholder="Enter your name" style="border:none; outline:none; font-family:'Ubuntu',sans-serif; font-weight:500; font-size:16px; color:#1b1d24; background:transparent; width:200px;" />
+      </div>
+      <div style="font-size:13px; color:#a39a86; margin-top:10px;">Pick how you want to predict the group stage — both paths lead to the same knockout bracket.</div>
+
+      <div style="display:flex; gap:20px; justify-content:center; margin-top:30px; flex-wrap:wrap;">
+        <div onClick="{{ onMatch }}" style="flex:1; min-width:280px; max-width:360px; background:#fff; border:1px solid #e6dcc6; border-radius:18px; padding:28px; text-align:left; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,.05); transition:transform .15s;" style-hover="transform:translateY(-3px); border-color:#c0892b;">
+          <div style="width:48px; height:48px; border-radius:12px; background:#1f9e6e22; display:flex; align-items:center; justify-content:center; font-size:24px;">⚽</div>
+          <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:23px; margin-top:16px;">Match Predictor</div>
+          <div style="font-size:15px; color:#6a6c74; margin-top:8px; line-height:1.55;">Go game-by-game. Tap winners across all 72 group matches and watch the tables build themselves.</div>
+          <div style="display:inline-flex; align-items:center; gap:7px; margin-top:18px; font-family:'Ubuntu',sans-serif; font-weight:500; color:#0f7f63;">Pick this path <span>→</span></div>
+        </div>
+        <div onClick="{{ onStandings }}" style="flex:1; min-width:280px; max-width:360px; background:#fff; border:1px solid #e6dcc6; border-radius:18px; padding:28px; text-align:left; cursor:pointer; box-shadow:0 10px 30px rgba(0,0,0,.05); transition:transform .15s;" style-hover="transform:translateY(-3px); border-color:#c0892b;">
+          <div style="width:48px; height:48px; border-radius:12px; background:#2f6df022; display:flex; align-items:center; justify-content:center; font-size:24px;">📊</div>
+          <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:23px; margin-top:16px;">Group Standings</div>
+          <div style="font-size:15px; color:#6a6c74; margin-top:8px; line-height:1.55;">Skip the details. Just rank each group 1st · 2nd · 3rd and jump straight to the knockouts.</div>
+          <div style="display:inline-flex; align-items:center; gap:7px; margin-top:18px; font-family:'Ubuntu',sans-serif; font-weight:500; color:#2f6df0;">Pick this path <span>→</span></div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:26px; justify-content:center; margin-top:46px; flex-wrap:wrap; color:#8a8170; font-size:14px;">
+        <span><b style="color:#1b1d24; font-family:'Ubuntu';">48</b> teams</span>
+        <span><b style="color:#1b1d24; font-family:'Ubuntu';">12</b> groups</span>
+        <span><b style="color:#1b1d24; font-family:'Ubuntu';">32</b>-team knockout</span>
+        <span><b style="color:#1b1d24; font-family:'Ubuntu';">1</b> champion</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== GROUP STAGE ===================== -->
+  <sc-if value="{{ isGroups }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:1300px; margin:0 auto; padding:30px 22px 90px; animation:p26up .4s ease both;">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <div>
+          <div style="font-family:'Roboto Condensed'; font-size:12px; letter-spacing:.2em; color:#b08a3a; font-weight:700;">STEP 2 · GROUP STAGE</div>
+          <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:32px; margin-top:6px;">{{ groupsTitle }}</div>
+          <div style="font-size:15px; color:#6a6256; margin-top:4px;">{{ groupsSub }}</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div onClick="{{ onFillAll }}" style="font-family:'Ubuntu',sans-serif; font-weight:500; font-size:14px; color:#6a6256; background:#fff; border:1px solid #e2d6bd; border-radius:10px; padding:9px 16px; cursor:pointer;">⚡ Fill all by ranking</div>
+          <div onClick="{{ onContinueGroups }}" style="{{ continueGroupsStyle }}">{{ continueGroupsLabel }} →</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(330px,1fr)); gap:16px; margin-top:24px;">
+        <sc-for list="{{ groupsVM }}" as="g" hint-placeholder-count="12">
+          <div style="{{ g.cardStyle }}">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+              <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:17px; white-space:nowrap;">{{ g.label }}</div>
+              <div style="display:flex; align-items:center; gap:8px; flex:0 0 auto;">
+                <span style="{{ g.statusStyle }}">{{ g.statusLabel }}</span>
+                <span onClick="{{ g.onFill }}" title="Auto-pick this group" style="font-size:13px; color:#b08a3a; cursor:pointer; font-weight:700;">⚡</span>
+              </div>
+            </div>
+
+            <!-- MATCH approach -->
+            <sc-if value="{{ approachIsMatch }}" hint-placeholder-val="{{ true }}">
+              <div>
+                <sc-for list="{{ g.matches }}" as="mm" hint-placeholder-count="6">
+                  <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+                    <div onClick="{{ mm.a.onPick }}" style="{{ mm.a.style }}">{{ mm.a.flagEl }}<span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ mm.a.name }}</span></div>
+                    <span style="font-size:10px; color:#b3a98f; font-weight:700; flex:0 0 auto;">v</span>
+                    <div onClick="{{ mm.b.onPick }}" style="{{ mm.b.style }}">{{ mm.b.flagEl }}<span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ mm.b.name }}</span></div>
+                  </div>
+                </sc-for>
+                <div style="margin-top:12px; padding-top:10px; border-top:1px dashed #e4dac3; display:flex; align-items:center; gap:8px; font-size:13px; color:#8a8170;">
+                  <span style="font-family:'Roboto Condensed'; letter-spacing:.08em; font-weight:700; color:#b08a3a;">THROUGH</span>
+                  <sc-for list="{{ g.qual }}" as="q" hint-placeholder-count="3">
+                    <span style="{{ q.style }}">{{ q.flagEl }}<span>{{ q.code }}</span></span>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <!-- STANDINGS approach -->
+            <sc-if value="{{ approachIsStandings }}" hint-placeholder-val="{{ true }}">
+              <div>
+                <div style="font-size:12px; color:#a39a86; margin:2px 0 4px;">Tap teams in order: 1st → 4th</div>
+                <sc-for list="{{ g.rankTeams }}" as="rt" hint-placeholder-count="4">
+                  <div onClick="{{ rt.onClick }}" style="{{ rt.style }}">
+                    <span style="{{ rt.badgeStyle }}">{{ rt.posLabel }}</span>
+                    {{ rt.flagEl }}
+                    <span style="font-size:15px;">{{ rt.name }}</span>
+                    <span style="{{ rt.tagStyle }}">{{ rt.tag }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== WILDCARDS (3rd place) ===================== -->
+  <sc-if value="{{ isThirds }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:1000px; margin:0 auto; padding:30px 22px 90px; animation:p26up .4s ease both;">
+      <div style="font-family:'Roboto Condensed'; font-size:12px; letter-spacing:.2em; color:#b08a3a; font-weight:700;">STEP 3 · WILDCARDS</div>
+      <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:32px; margin-top:6px;">The best 8 third-place teams advance</div>
+      <div style="font-size:15px; color:#6a6256; margin-top:6px; max-width:680px; line-height:1.55;">In the 48-team format, the 12 group winners and 12 runners-up qualify automatically — plus the <b>8 best third-place teams</b>. Pick the 8 you think sneak through. I've pre-selected by FIFA ranking; adjust freely.</div>
+
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-top:22px;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:22px;"><span style="{{ thirdsCountStyle }}">{{ thirdsCount }}</span> <span style="color:#a39a86; font-size:16px;">/ 8 selected</span></div>
+          <div onClick="{{ onAutoThirds }}" style="font-family:'Ubuntu',sans-serif; font-weight:500; font-size:14px; color:#6a6256; background:#fff; border:1px solid #e2d6bd; border-radius:10px; padding:8px 14px; cursor:pointer;">⚡ Auto-pick top 8</div>
+        </div>
+        <div onClick="{{ onContinueThirds }}" style="{{ continueThirdsStyle }}">Build the bracket →</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:12px; margin-top:20px;">
+        <sc-for list="{{ thirdsVM }}" as="t" hint-placeholder-count="12">
+          <div onClick="{{ t.onToggle }}" style="{{ t.style }}">
+            <div style="display:flex; align-items:center; gap:9px;">
+              <span style="font-size:22px;">{{ t.flagEl }}</span>
+              <div style="line-height:1.15;">
+                <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:15px;">{{ t.name }}</div>
+                <div style="font-size:12px; color:#9a9082;">3rd · Group {{ t.group }} · FIFA #{{ t.rankNum }}</div>
+              </div>
+            </div>
+            <div style="{{ t.checkStyle }}">{{ t.checkMark }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== BRACKET ===================== -->
+  <sc-if value="{{ isBracket }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:1340px; margin:0 auto; padding:30px 22px 70px; animation:p26up .4s ease both;">
+      <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+        <div>
+          <div style="font-family:'Roboto Condensed'; font-size:12px; letter-spacing:.2em; color:#b08a3a; font-weight:700;">STEP 4 · KNOCKOUT BRACKET</div>
+          <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:32px; margin-top:6px;">Pick your way to the trophy</div>
+          <div style="font-size:15px; color:#6a6256; margin-top:4px;">Tap a team to send them through. Winners advance rightward, round by round. <span style="color:#b08a3a;">Scroll sideways to follow the path →</span></div>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <div onClick="{{ onSimulate }}" style="font-family:'Ubuntu',sans-serif; font-weight:500; font-size:14px; color:#6a6256; background:#fff; border:1px solid #e2d6bd; border-radius:10px; padding:9px 14px; cursor:pointer;">⚡ Simulate rest</div>
+          <div onClick="{{ onResetBracket }}" style="font-family:'Ubuntu',sans-serif; font-weight:500; font-size:14px; color:#a85b4a; background:#fff; border:1px solid #ecd3cc; border-radius:10px; padding:9px 14px; cursor:pointer;">Reset</div>
+          <div onClick="{{ onSeeResults }}" style="{{ seeResultsStyle }}">See results →</div>
+        </div>
+      </div>
+
+      <div class="p26-scroll" style="overflow-x:auto; margin-top:22px; padding:18px 10px 24px; background:#f6f1e6; border:1px solid #e4dac3; border-radius:18px;">
+        <!-- round labels -->
+        <div style="display:flex; align-items:center; min-width:1240px; padding:0 6px 8px;">
+          <sc-for list="{{ bracketHeads }}" as="hd" hint-placeholder-count="11">
+            <div style="{{ hd.style }}"><span style="{{ hd.labelStyle }}">{{ hd.label }}</span></div>
+          </sc-for>
+        </div>
+        <!-- columns + gutters -->
+        <div style="display:flex; align-items:stretch; min-width:1240px; padding:0 6px;">
+          <sc-for list="{{ bracketRow }}" as="col" hint-placeholder-count="11">
+            <div style="{{ col.colStyle }}">
+              <sc-if value="{{ col.isRound }}" hint-placeholder-val="{{ true }}">
+                <sc-for list="{{ col.matches }}" as="m" hint-placeholder-count="4">
+                  <div style="{{ m.cardStyle }}">
+                    <div onClick="{{ m.top.onPick }}" style="{{ m.top.style }}"><span style="font-size:1.05em;">{{ m.top.flagEl }}</span><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ m.top.name }}</span></div>
+                    <div style="height:1px; background:#ece2cf;"></div>
+                    <div onClick="{{ m.bot.onPick }}" style="{{ m.bot.style }}"><span style="font-size:1.05em;">{{ m.bot.flagEl }}</span><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ m.bot.name }}</span></div>
+                  </div>
+                </sc-for>
+              </sc-if>
+              <sc-if value="{{ col.isGutter }}" hint-placeholder-val="{{ true }}">
+                <sc-for list="{{ col.cells }}" as="cell" hint-placeholder-count="4">
+                  <div style="{{ cell.style }}"></div>
+                </sc-for>
+              </sc-if>
+              <sc-if value="{{ col.isChamp }}" hint-placeholder-val="{{ true }}">
+                <div style="{{ champBoxStyle }}">
+                  <div style="font-family:'Roboto Condensed'; font-size:11px; letter-spacing:.2em; color:#e8c25f;">CHAMPION</div>
+                  <div style="font-size:40px; margin-top:8px; animation:p26pop .5s ease both;">🏆</div>
+                  <div style="font-size:30px; margin-top:6px;">{{ champFlag }}</div>
+                  <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:18px; margin-top:4px; color:#fff;">{{ champName }}</div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- THIRD-PLACE PLAYOFF -->
+      <div style="max-width:440px; margin:24px auto 0;">
+        <div style="text-align:center; font-family:'Roboto Condensed'; font-size:12px; letter-spacing:.18em; color:#a9733c; font-weight:700; margin-bottom:10px;">🥉 THIRD-PLACE PLAYOFF</div>
+        <div style="background:#fff; border:1px solid #e2cf9e; border-radius:12px; overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.06);">
+          <div onClick="{{ tpTop.onPick }}" style="{{ tpTop.style }}"><span style="font-size:1.1em;">{{ tpTop.flagEl }}</span><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ tpTop.name }}</span></div>
+          <div style="height:1px; background:#ece2cf;"></div>
+          <div onClick="{{ tpBot.onPick }}" style="{{ tpBot.style }}"><span style="font-size:1.1em;">{{ tpBot.flagEl }}</span><span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ tpBot.name }}</span></div>
+        </div>
+        <div style="text-align:center; font-size:13px; color:#a3946c; margin-top:8px;">The two beaten semifinalists meet for the bronze medal.</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ===================== RESULTS ===================== -->
+  <sc-if value="{{ isResults }}" hint-placeholder-val="{{ true }}">
+    <div style="max-width:920px; margin:0 auto; padding:34px 22px 100px; animation:p26up .45s ease both;">
+      <sc-if value="{{ sharedView }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#fff; border:1px solid #e2d6bd; border-radius:12px; padding:12px 18px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+          <div style="font-size:15px; color:#6a6256;">You're viewing <b style="color:#1b1d24;">{{ name }}'s</b> bracket prediction.</div>
+          <div onClick="{{ onRestart }}" style="font-family:'Ubuntu',sans-serif; font-weight:500; font-size:14px; background:#c0892b; color:#fff; border-radius:9px; padding:8px 16px; cursor:pointer;">Make your own →</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ hasChampion }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <!-- hero -->
+          <div style="background:#1b1d24; border-radius:22px; padding:40px 30px; text-align:center; color:#fff; position:relative; overflow:hidden;">
+            <div style="position:absolute; inset:0; background:radial-gradient(circle at 50% 0%, rgba(192,137,43,.35), transparent 60%);"></div>
+            <div style="position:relative;">
+              <div style="font-size:56px; animation:p26pop .6s ease both;">🏆</div>
+              <div style="font-family:'Roboto Condensed'; font-size:12px; letter-spacing:.28em; color:#e8c25f; margin-top:8px;">YOUR PREDICTED CHAMPION</div>
+              <div style="font-size:54px; margin-top:10px;">{{ champFlag }}</div>
+              <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:44px; margin-top:4px; line-height:1;">{{ champName }}</div>
+              <div style="font-size:18px; color:#cfc7b6; margin-top:18px; max-width:560px; margin-left:auto; margin-right:auto; line-height:1.5;">{{ congrats }}</div>
+              <div style="display:inline-flex; align-items:center; gap:14px; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14); border-radius:14px; padding:12px 20px; margin-top:22px;">
+                <span style="font-family:'Ubuntu'; font-weight:700; font-size:17px; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;">{{ champFlag }} {{ champName }}</span>
+                <span style="font-size:13px; color:#e8c25f; font-family:'Roboto Condensed'; letter-spacing:.1em;">DEF.</span>
+                <span style="font-family:'Ubuntu'; font-weight:500; font-size:17px; color:#cfc7b6; white-space:nowrap; display:inline-flex; align-items:center; gap:6px;">{{ finalistFlag }} {{ finalistName }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- share -->
+          <div style="background:#fff; border:1px solid #e6dcc6; border-radius:16px; padding:20px 22px; margin-top:18px; display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap;">
+            <div>
+              <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:18px;">Share your bracket</div>
+              <div style="font-size:14px; color:#8a8170; margin-top:3px;">Copy a link that opens your exact predictions for friends to see.</div>
+            </div>
+            <div onClick="{{ onShare }}" style="{{ shareBtnStyle }}">{{ shareLabel }}</div>
+          </div>
+
+          <!-- podium -->
+          <div style="background:#fff; border:1px solid #e6dcc6; border-radius:16px; padding:26px 22px 22px; margin-top:18px;">
+            <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:18px; margin-bottom:20px; text-align:center;">Final standings</div>
+            <div style="display:flex; align-items:flex-end; justify-content:center; gap:14px;">
+              <div style="flex:1; max-width:170px; text-align:center;">
+                <div style="font-size:30px; line-height:1;">{{ silverFlag }}</div>
+                <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:15px; margin-top:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ silverName }}</div>
+                <div style="background:#ecebe6; border:1px solid #ddd8cc; border-bottom:none; border-radius:10px 10px 0 0; height:72px; display:flex; align-items:flex-start; justify-content:center; padding-top:8px; margin-top:10px;"><span style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:22px; color:#8a8170;">2</span></div>
+              </div>
+              <div style="flex:1; max-width:182px; text-align:center;">
+                <div style="font-size:22px; line-height:1;">👑</div>
+                <div style="font-size:34px; line-height:1; margin-top:4px;">{{ champFlag }}</div>
+                <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:17px; margin-top:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ champName }}</div>
+                <div style="background:#f6e3b8; border:1px solid #e2c987; border-bottom:none; border-radius:10px 10px 0 0; height:106px; display:flex; align-items:flex-start; justify-content:center; padding-top:10px; margin-top:10px;"><span style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:28px; color:#b0801f;">1</span></div>
+              </div>
+              <div style="flex:1; max-width:170px; text-align:center;">
+                <div style="font-size:30px; line-height:1;">{{ bronzeFlag }}</div>
+                <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:15px; margin-top:6px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ bronzeName }}</div>
+                <div style="background:#eddcc6; border:1px solid #ddc7a6; border-bottom:none; border-radius:10px 10px 0 0; height:54px; display:flex; align-items:flex-start; justify-content:center; padding-top:6px; margin-top:10px;"><span style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:20px; color:#a9733c;">3</span></div>
+              </div>
+            </div>
+            <sc-if value="{{ noBronze }}" hint-placeholder-val="{{ true }}">
+              <div style="text-align:center; font-size:13px; color:#a3946c; margin-top:16px;">Pick the third-place playoff back on the bracket to crown your bronze medalist.</div>
+            </sc-if>
+          </div>
+
+          <!-- champion road -->
+          <div style="background:#fff; border:1px solid #e6dcc6; border-radius:16px; padding:22px; margin-top:18px;">
+            <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:18px; margin-bottom:14px;">{{ champName }}'s road to glory</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <sc-for list="{{ road }}" as="r" hint-placeholder-count="5">
+                <div style="display:flex; align-items:center; gap:12px; padding:10px 12px; background:#f9f5ec; border:1px solid #efe6d2; border-radius:10px;">
+                  <span style="font-family:'Roboto Condensed'; font-size:11px; letter-spacing:.1em; color:#b08a3a; font-weight:700; width:110px; flex:0 0 auto;">{{ r.round }}</span>
+                  <span style="font-size:14px; color:#8a8170;">beat</span>
+                  <span style="font-size:18px;">{{ r.flagEl }}</span>
+                  <span style="font-family:'Ubuntu',sans-serif; font-weight:500; font-size:15px;">{{ r.opp }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- group winners -->
+          <div style="background:#fff; border:1px solid #e6dcc6; border-radius:16px; padding:22px; margin-top:18px;">
+            <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:18px; margin-bottom:14px;">Your 12 group winners</div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px;">
+              <sc-for list="{{ winnersVM }}" as="w" hint-placeholder-count="12">
+                <div style="display:flex; align-items:center; gap:9px; padding:9px 11px; background:#f9f5ec; border:1px solid #efe6d2; border-radius:10px;">
+                  <span style="width:20px; height:20px; border-radius:50%; background:#c0892b; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex:0 0 auto;">{{ w.g }}</span>
+                  <span style="font-size:18px;">{{ w.flagEl }}</span>
+                  <span style="font-family:'Ubuntu',sans-serif; font-weight:500; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ w.team }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; justify-content:center; margin-top:24px; flex-wrap:wrap;">
+            <div onClick="{{ onEditBracket }}" style="font-family:'Ubuntu',sans-serif; font-weight:500; font-size:15px; background:#fff; border:1px solid #e2d6bd; border-radius:11px; padding:11px 22px; cursor:pointer; color:#6a6256;">← Edit bracket</div>
+            <div onClick="{{ onRestart }}" style="font-family:'Ubuntu',sans-serif; font-weight:500; font-size:15px; background:#1b1d24; color:#fff; border-radius:11px; padding:11px 22px; cursor:pointer;">Start a new prediction</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ noChampion }}" hint-placeholder-val="{{ true }}">
+        <div style="text-align:center; padding:60px 20px;">
+          <div style="font-size:48px;">🏟️</div>
+          <div style="font-family:'Ubuntu',sans-serif; font-weight:700; font-size:24px; margin-top:14px;">No champion yet</div>
+          <div style="font-size:15px; color:#6a6256; margin-top:8px;">Finish the bracket to crown your winner.</div>
+          <div onClick="{{ onEditBracket }}" style="display:inline-block; font-family:'Ubuntu',sans-serif; font-weight:500; font-size:15px; background:#c0892b; color:#fff; border-radius:11px; padding:11px 22px; cursor:pointer; margin-top:20px;">Go to bracket →</div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:860}}">
+class Component extends DCLogic {
+  GROUPS = {
+    A:['Mexico','South Africa','South Korea','Czechia'],
+    B:['Canada','Bosnia & Herzegovina','Qatar','Switzerland'],
+    C:['Brazil','Morocco','Haiti','Scotland'],
+    D:['United States','Paraguay','Australia','Turkey'],
+    E:['Germany','Curacao','Ivory Coast','Ecuador'],
+    F:['Netherlands','Japan','Sweden','Tunisia'],
+    G:['Belgium','Egypt','Iran','New Zealand'],
+    H:['Spain','Cape Verde','Saudi Arabia','Uruguay'],
+    I:['France','Senegal','Iraq','Norway'],
+    J:['Argentina','Algeria','Austria','Jordan'],
+    K:['Portugal','DR Congo','Uzbekistan','Colombia'],
+    L:['England','Croatia','Ghana','Panama'],
+  };
+  TEAM = {
+    'Mexico':['🇲🇽','MEX',15],'South Africa':['🇿🇦','RSA',56],'South Korea':['🇰🇷','KOR',23],'Czechia':['🇨🇿','CZE',42],
+    'Canada':['🇨🇦','CAN',27],'Bosnia & Herzegovina':['🇧🇦','BIH',70],'Qatar':['🇶🇦','QAT',37],'Switzerland':['🇨🇭','SUI',17],
+    'Brazil':['🇧🇷','BRA',5],'Morocco':['🇲🇦','MAR',11],'Haiti':['🇭🇹','HAI',84],'Scotland':['🏴󠁧󠁢󠁳󠁣󠁴󠁿','SCO',36],
+    'United States':['🇺🇸','USA',14],'Paraguay':['🇵🇾','PAR',39],'Australia':['🇦🇺','AUS',26],'Turkey':['🇹🇷','TUR',25],
+    'Germany':['🇩🇪','GER',9],'Curacao':['🇨🇼','CUW',82],'Ivory Coast':['🇨🇮','CIV',41],'Ecuador':['🇪🇨','ECU',24],
+    'Netherlands':['🇳🇱','NED',7],'Japan':['🇯🇵','JPN',18],'Sweden':['🇸🇪','SWE',44],'Tunisia':['🇹🇳','TUN',40],
+    'Belgium':['🇧🇪','BEL',8],'Egypt':['🇪🇬','EGY',34],'Iran':['🇮🇷','IRN',20],'New Zealand':['🇳🇿','NZL',89],
+    'Spain':['🇪🇸','ESP',1],'Cape Verde':['🇨🇻','CPV',68],'Saudi Arabia':['🇸🇦','KSA',60],'Uruguay':['🇺🇾','URU',16],
+    'France':['🇫🇷','FRA',3],'Senegal':['🇸🇳','SEN',19],'Iraq':['🇮🇶','IRQ',58],'Norway':['🇳🇴','NOR',29],
+    'Argentina':['🇦🇷','ARG',2],'Algeria':['🇩🇿','ALG',35],'Austria':['🇦🇹','AUT',22],'Jordan':['🇯🇴','JOR',66],
+    'Portugal':['🇵🇹','POR',6],'DR Congo':['🇨🇩','COD',53],'Uzbekistan':['🇺🇿','UZB',57],'Colombia':['🇨🇴','COL',13],
+    'England':['🏴󠁧󠁢󠁥󠁮󠁧󠁿','ENG',4],'Croatia':['🇭🇷','CRO',10],'Ghana':['🇬🇭','GHA',72],'Panama':['🇵🇦','PAN',30],
+  };
+  CODE2={'Mexico':'mx','South Africa':'za','South Korea':'kr','Czechia':'cz','Canada':'ca','Bosnia & Herzegovina':'ba','Qatar':'qa','Switzerland':'ch','Brazil':'br','Morocco':'ma','Haiti':'ht','Scotland':'gb-sct','United States':'us','Paraguay':'py','Australia':'au','Turkey':'tr','Germany':'de','Curacao':'cw','Ivory Coast':'ci','Ecuador':'ec','Netherlands':'nl','Japan':'jp','Sweden':'se','Tunisia':'tn','Belgium':'be','Egypt':'eg','Iran':'ir','New Zealand':'nz','Spain':'es','Cape Verde':'cv','Saudi Arabia':'sa','Uruguay':'uy','France':'fr','Senegal':'sn','Iraq':'iq','Norway':'no','Argentina':'ar','Algeria':'dz','Austria':'at','Jordan':'jo','Portugal':'pt','DR Congo':'cd','Uzbekistan':'uz','Colombia':'co','England':'gb-eng','Croatia':'hr','Ghana':'gh','Panama':'pa'};
+  PAIRS=[[0,1],[2,3],[0,2],[1,3],[0,3],[1,2]];
+  R32=[['1H','T'],['2C','2F'],['1A','T'],['1B','2E'],['1I','T'],['2G','2K'],['1C','T'],['1D','2A'],['1L','T'],['2B','2D'],['1E','T'],['1F','2J'],['1J','T'],['2H','2L'],['1K','T'],['1G','2I']];
+  THIRD_SLOTS=[[0,['H','C','F']],[2,['A','B','E']],[4,['I','G','K']],[6,['C','D','A']],[8,['L','B','D']],[10,['E','F','J']],[12,['J','H','L']],[14,['K','G','I']]];
+  ROUND_N={R32:16,R16:8,QF:4,SF:2,F:1};
+  GKEYS=['A','B','C','D','E','F','G','H','I','J','K','L'];
+
+  state={screen:'welcome',approach:null,name:'',nameInput:'',flagsOk:true,matchPicks:{},ranks:{},thirds:[],thirdsTouched:false,bracket:{},shared:false,copied:false};
+
+  componentDidMount(){
+    try{
+      const h=location.hash||'';
+      if(h.indexOf('s=')>=0){
+        const enc=decodeURIComponent(h.split('s=')[1]);
+        const o=JSON.parse(decodeURIComponent(escape(atob(enc))));
+        this.setState(Object.assign({},o,{shared:true,screen:'results'}));
+      } else {
+        const raw=localStorage.getItem('predict26');
+        if(raw) this.setState(JSON.parse(raw));
+      }
+    }catch(e){}
+    this.detectFlags();
+  }
+  detectFlags(){
+    try{
+      const cv=document.createElement('canvas');cv.width=22;cv.height=16;
+      const c=cv.getContext('2d');c.font='14px Arial';c.textBaseline='top';c.fillText('🇧🇷',0,0);
+      const d=c.getImageData(0,0,22,16).data;let col=false;
+      for(let i=0;i<d.length;i+=4){const r=d[i],g=d[i+1],b=d[i+2],a=d[i+3];if(a>0&&(Math.max(r,g,b)-Math.min(r,g,b))>40){col=true;break;}}
+      if(!col)this.setState({flagsOk:false});
+    }catch(e){}
+  }
+  persist(s){ try{ if(!s.shared){ const k={screen:s.screen,approach:s.approach,name:s.name,matchPicks:s.matchPicks,ranks:s.ranks,thirds:s.thirds,thirdsTouched:s.thirdsTouched,bracket:s.bracket}; localStorage.setItem('predict26',JSON.stringify(k)); } }catch(e){} }
+  set(extra){ const s=Object.assign({},this.state,extra); this.setState(extra); this.persist(s); }
+
+  flag(name){ const t=this.TEAM[name]; if(!t) return React.createElement('span',null,'🏳️');
+    const code=this.CODE2[name], lbl=t[1];
+    if(!code) return React.createElement('span',{style:{fontSize:'10px',fontWeight:700,fontFamily:"'Roboto Condensed',sans-serif",background:'#1b1d24',color:'#fff',borderRadius:'4px',padding:'2px 5px',letterSpacing:'.02em'}},lbl);
+    return React.createElement('img',{src:'https://flagcdn.com/w80/'+code+'.png',srcSet:'https://flagcdn.com/w160/'+code+'.png 2x',alt:lbl,loading:'lazy',
+      style:{height:'0.92em',width:'auto',borderRadius:'2px',display:'inline-block',verticalAlign:'-0.12em',boxShadow:'0 0 0 1px rgba(0,0,0,.14)',objectFit:'cover'},
+      onError:(e)=>{ try{ const s=document.createElement('span'); s.textContent=lbl; s.setAttribute('style','font-size:10px;font-weight:700;font-family:Roboto Condensed,sans-serif;background:#1b1d24;color:#fff;border-radius:4px;padding:2px 5px;letter-spacing:.02em;'); e.target.replaceWith(s); }catch(_){} }});
+  }
+  rank(n){ const t=this.TEAM[n]; return t?t[2]:999; }
+  better(a,b){ return this.rank(a)<=this.rank(b)?a:b; }
+
+  groupStandings(g){
+    const teams=this.GROUPS[g];
+    if(this.state.approach==='match'){
+      const wins={};teams.forEach(t=>wins[t]=0);let done=0;
+      this.PAIRS.forEach((p,i)=>{const w=this.state.matchPicks[g+'-'+i];if(w){wins[w]++;done++;}});
+      const order=[...teams].sort((a,b)=>(wins[b]-wins[a])||(this.rank(a)-this.rank(b)));
+      return {order,complete:done===6,wins};
+    }
+    const r=this.state.ranks[g]||[];const rest=teams.filter(t=>!r.includes(t));
+    return {order:[...r,...rest],complete:r.length>=3,wins:null};
+  }
+  allComplete(){ return this.GKEYS.every(g=>this.groupStandings(g).complete); }
+  results(){ const o={}; this.GKEYS.forEach(g=>o[g]=this.groupStandings(g).order); return o; }
+  thirdsList(){ const r=this.results(); return this.GKEYS.map(g=>({group:g,team:r[g][2]})); }
+  suggested(){ return [...this.thirdsList()].sort((a,b)=>this.rank(a.team)-this.rank(b.team)).slice(0,8).map(x=>x.team); }
+
+  assignThirds(){
+    const res=this.results();
+    const sel=(this.state.thirds&&this.state.thirds.length===8)?this.state.thirds:this.suggested();
+    const items=sel.map(t=>({team:t,group:this.GKEYS.find(g=>res[g][2]===t)}));
+    const slots=this.THIRD_SLOTS.map(s=>({idx:s[0],avoid:s[1],team:null}));
+    const used=new Array(items.length).fill(false);
+    const bt=(si)=>{ if(si===slots.length)return true; for(let k=0;k<items.length;k++){ if(used[k])continue; if(slots[si].avoid.indexOf(items[k].group)>=0)continue; used[k]=true;slots[si].team=items[k].team; if(bt(si+1))return true; used[k]=false;slots[si].team=null; } return false; };
+    if(!bt(0)){ let k=0; slots.forEach(s=>{ while(used[k])k++; s.team=items[k]?items[k].team:null; if(items[k])used[k]=true; }); }
+    const m={}; slots.forEach(s=>m[s.idx]=s.team); return m;
+  }
+  r32Teams(){ const res=this.results();const tm=this.assignThirds();
+    return this.R32.map((mt,i)=>mt.map(spec=>{ if(spec==='T')return tm[i]||null; const pos=spec[0]==='1'?0:1; return res[spec[1]][pos]; }));
+  }
+  teamsOf(id,b){ b=b||this.state.bracket;
+    if(id.indexOf('R32-')===0) return this.r32Teams()[+id.slice(4)];
+    if(id.indexOf('TP-')===0){ const lose=(k)=>{ const t=this.teamsOf('SF-'+k,b); const w=b['SF-'+k]; if(!w||!t[0]||!t[1])return null; return t.find(x=>x&&x!==w)||null; }; return [lose(0),lose(1)]; }
+    let fp;
+    if(id.indexOf('R16-')===0){const k=+id.slice(4);fp=['R32-'+(2*k),'R32-'+(2*k+1)];}
+    else if(id.indexOf('QF-')===0){const k=+id.slice(3);fp=['R16-'+(2*k),'R16-'+(2*k+1)];}
+    else if(id.indexOf('SF-')===0){const k=+id.slice(3);fp=['QF-'+(2*k),'QF-'+(2*k+1)];}
+    else fp=['SF-0','SF-1'];
+    return [b[fp[0]]||null,b[fp[1]]||null];
+  }
+  clean(b){ for(let p=0;p<6;p++){ Object.keys(b).forEach(k=>{ const t=this.teamsOf(k,b); if(!t||t.indexOf(b[k])<0) delete b[k]; }); } return b; }
+  champion(){ return this.state.bracket['F-0']||null; }
+  bronze(){ return this.state.bracket['TP-0']||null; }
+  finalist(){ const c=this.champion(); if(!c)return null; const t=this.teamsOf('F-0',this.state.bracket); return t.find(x=>x&&x!==c)||null; }
+
+  // actions
+  onName=(e)=>this.setState({nameInput:e.target.value});
+  choose(ap){ const nm=(this.state.nameInput||'').trim()||'Friend'; this.set({approach:ap,name:nm,screen:'groups'}); }
+  pickMatch(g,i,team){ this.set({matchPicks:Object.assign({},this.state.matchPicks,{[g+'-'+i]:team})}); }
+  toggleRank(g,t){ const cur=[...(this.state.ranks[g]||[])];const i=cur.indexOf(t); if(i>=0)cur.splice(i,1); else if(cur.length<4)cur.push(t); this.set({ranks:Object.assign({},this.state.ranks,{[g]:cur})}); }
+  fillGroup(g){ if(this.state.approach==='match'){ const mp=Object.assign({},this.state.matchPicks); this.PAIRS.forEach((p,i)=>{mp[g+'-'+i]=this.better(this.GROUPS[g][p[0]],this.GROUPS[g][p[1]]);}); this.set({matchPicks:mp}); } else { const ts=[...this.GROUPS[g]].sort((a,b)=>this.rank(a)-this.rank(b)); this.set({ranks:Object.assign({},this.state.ranks,{[g]:ts})}); } }
+  fillAll(){ if(this.state.approach==='match'){ const mp={}; this.GKEYS.forEach(g=>this.PAIRS.forEach((p,i)=>{mp[g+'-'+i]=this.better(this.GROUPS[g][p[0]],this.GROUPS[g][p[1]]);})); this.set({matchPicks:mp}); } else { const r={}; this.GKEYS.forEach(g=>r[g]=[...this.GROUPS[g]].sort((a,b)=>this.rank(a)-this.rank(b))); this.set({ranks:r}); } }
+  toggleThird(t){ let a=[...this.state.thirds];const i=a.indexOf(t); if(i>=0)a.splice(i,1); else { if(a.length>=8)return; a.push(t); } this.set({thirds:a,thirdsTouched:true}); }
+  autoThirds(){ this.set({thirds:this.suggested(),thirdsTouched:true}); }
+  pick(id,team){ if(!team)return; let b=Object.assign({},this.state.bracket); b[id]=team; b=this.clean(b); this.set({bracket:b}); }
+  simulate(){ let b=Object.assign({},this.state.bracket); const order=[]; ['R32','R16','QF','SF','F'].forEach(key=>{for(let k=0;k<this.ROUND_N[key];k++)order.push(key+'-'+k);}); order.forEach(id=>{const t=this.teamsOf(id,b);if(t[0]&&t[1]&&!b[id])b[id]=this.better(t[0],t[1]);}); const tt=this.teamsOf('TP-0',b); if(tt[0]&&tt[1]&&!b['TP-0'])b['TP-0']=this.better(tt[0],tt[1]); this.set({bracket:b}); }
+  go(screen){ if(screen==='thirds'){ const th=(this.state.thirdsTouched&&this.state.thirds.length)?this.state.thirds:this.suggested(); this.set({screen,thirds:th,thirdsTouched:this.state.thirdsTouched}); return; } if(screen==='bracket'){ this.set({screen,bracket:this.clean(Object.assign({},this.state.bracket))}); return; } this.set({screen}); }
+  restart(){ try{localStorage.removeItem('predict26');}catch(e){} try{history.replaceState(null,'',location.pathname+location.search);}catch(e){} this.setState({screen:'welcome',approach:null,name:'',nameInput:'',matchPicks:{},ranks:{},thirds:[],thirdsTouched:false,bracket:{},shared:false,copied:false}); }
+  share(){ const s=this.state; const k={approach:s.approach,name:s.name,matchPicks:s.matchPicks,ranks:s.ranks,thirds:s.thirds,bracket:s.bracket}; let url=''; try{ const enc=btoa(unescape(encodeURIComponent(JSON.stringify(k)))); url=location.origin+location.pathname+'#s='+enc; }catch(e){} try{navigator.clipboard&&navigator.clipboard.writeText(url);}catch(e){} this.setState({copied:true}); setTimeout(()=>this.setState({copied:false}),2200); }
+
+  // style helpers
+  teamBtn(picked,dim){ return {flex:1,minWidth:0,display:'flex',alignItems:'center',gap:'6px',padding:'7px 9px',borderRadius:'7px',cursor:'pointer',fontFamily:"'Ubuntu',sans-serif",fontWeight:500,fontSize:'13px',background:picked?'#c0892b':'#f6f1e6',color:picked?'#fff':'#2a2c33',border:'1px solid '+(picked?'#c0892b':'#ece2cf'),opacity:dim?0.5:1,transition:'all .15s'}; }
+  rankRow(pos){ return {display:'flex',alignItems:'center',gap:'9px',padding:'9px 11px',borderRadius:'9px',cursor:'pointer',marginTop:'7px',background:pos===1?'#fbf1d8':pos===2?'#f1ece1':pos===3?'#e9f0fb':'#f6f1e6',border:'1px solid '+(pos>0?'#e2d4b4':'#ece2cf'),fontFamily:"'Ubuntu',sans-serif",fontWeight:500}; }
+  badge(pos){ const c=pos===1?'#c0892b':pos===2?'#8a8170':pos===3?'#2f6df0':'#c9c1b0'; return {width:'22px',height:'22px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'12px',fontWeight:700,color:'#fff',background:c,flex:'0 0 auto'}; }
+  brSide(picked,dim,empty,clickable){ return {display:'flex',alignItems:'center',gap:'7px',padding:'8px 10px',cursor:clickable?'pointer':'default',background:picked?'#c0892b':'#fff',color:picked?'#fff':(empty?'#bcb29d':'#26282f'),fontFamily:"'Ubuntu',sans-serif",fontWeight:500,fontSize:'13px',opacity:dim?0.5:1,minHeight:'16px',transition:'all .15s'}; }
+
+  renderVals(){
+    const s=this.state;
+    const screen=s.screen;
+    const accGroups=!!s.approach;
+    const accThirds=accGroups&&this.allComplete();
+    const accBracket=accThirds&&((s.thirds&&s.thirds.length===8)||true);
+    const champ=this.champion();
+    const accResults=!!champ;
+    const accMap={welcome:true,groups:accGroups,thirds:accThirds,bracket:accThirds,results:accResults};
+    const stepsDef=[['Home','welcome'],['Group Stage','groups'],['Wildcards','thirds'],['Bracket','bracket'],['Results','results']];
+    const steps=stepsDef.map((d,i)=>{ const key=d[1]; const active=screen===key; const acc=accMap[key]; return {
+      n:i+1,label:d[0],
+      onClick:acc?(()=>this.go(key)):(()=>{}),
+      style:{display:'flex',alignItems:'center',gap:'7px',padding:'6px 11px',borderRadius:'20px',cursor:acc?'pointer':'default',background:active?'#1b1d24':'transparent',opacity:acc?1:0.4},
+      numStyle:{width:'20px',height:'20px',borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'11px',fontWeight:700,fontFamily:"'Ubuntu',sans-serif",background:active?'#c0892b':'#e2d6bd',color:active?'#fff':'#8a7a52',flex:'0 0 auto'},
+      labelStyle:{fontFamily:"'Ubuntu',sans-serif",fontWeight:500,fontSize:'13px',color:active?'#fff':'#6a6256',whiteSpace:'nowrap'},
+    }; });
+
+    const v={
+      isWelcome:screen==='welcome',isGroups:screen==='groups',isThirds:screen==='thirds',isBracket:screen==='bracket',isResults:screen==='results',
+      hasName:!!s.name&&screen!=='welcome', name:s.name||'', nameInput:s.nameInput,
+      steps, approachIsMatch:s.approach==='match', approachIsStandings:s.approach==='standings',
+      onName:this.onName, onMatch:()=>this.choose('match'), onStandings:()=>this.choose('standings'),
+      onBrand:()=>this.go('welcome'), onRestart:()=>this.restart(),
+    };
+
+    // GROUPS
+    if(screen==='groups'){
+      const isMatch=s.approach==='match';
+      v.groupsTitle=isMatch?'Pick your match winners':'Set your group tables';
+      v.groupsSub=isMatch?'Tap the winner of every match — tables and qualifiers update live.':'Tap teams 1st → 4th in each group. Top 2 advance automatically.';
+      v.groupsVM=this.GKEYS.map(g=>{
+        const st=this.groupStandings(g);
+        const matches=this.PAIRS.map((p,i)=>{ const a=this.GROUPS[g][p[0]],b=this.GROUPS[g][p[1]],w=s.matchPicks[g+'-'+i];
+          const mk=(team)=>({name:team,flagEl:this.flag(team),style:this.teamBtn(w===team,!!w&&w!==team),onPick:()=>this.pickMatch(g,i,team)});
+          return {a:mk(a),b:mk(b)};
+        });
+        const ranked=s.ranks[g]||[];
+        const rankTeams=this.GROUPS[g].map(t=>{ const pi=ranked.indexOf(t); const pos=pi>=0?pi+1:(ranked.length>=3?4:0);
+          const tag=pos===1?'WINNER':pos===2?'ADV':pos===3?'3rd':pos===4?'OUT':'';
+          const tagColor=pos===1?'#c0892b':pos===2?'#1f9e6e':pos===3?'#2f6df0':'#b3a98f';
+          return {name:t,flagEl:this.flag(t),posLabel:pos>0?String(pos):'—',style:this.rankRow(pos),badgeStyle:this.badge(pos),onClick:()=>this.toggleRank(g,t),tag,tagStyle:{marginLeft:'auto',fontFamily:"'Roboto Condensed'",fontSize:'10px',fontWeight:700,letterSpacing:'.08em',color:tagColor}};
+        });
+        const qual=st.order.slice(0,3).map((t,idx)=>({code:this.TEAM[t][1],flagEl:this.flag(t),style:{display:'inline-flex',alignItems:'center',gap:'4px',fontFamily:"'Ubuntu'",fontWeight:700,fontSize:'12px',color:idx<2?'#1b1d24':'#9a9082',opacity:idx<2?1:0.8}}));
+        return {g,label:'Group '+g,matches,rankTeams,qual,
+          cardStyle:{background:'#fff',border:'1px solid '+(st.complete?'#dcc89a':'#e6dcc6'),borderRadius:'14px',padding:'16px'},
+          statusLabel:st.complete?'✓ Done':'In progress',
+          statusStyle:{fontFamily:"'Roboto Condensed'",fontSize:'11px',fontWeight:700,letterSpacing:'.06em',padding:'3px 8px',borderRadius:'12px',background:st.complete?'#e7f4ee':'#f2ece0',color:st.complete?'#1f8a60':'#a3946c'},
+          onFill:()=>this.fillGroup(g)};
+      });
+      const done=this.allComplete();
+      v.continueGroupsLabel=done?'Continue':'Finish all groups';
+      v.continueGroupsStyle={fontFamily:"'Ubuntu',sans-serif",fontWeight:500,fontSize:'14px',padding:'9px 18px',borderRadius:'10px',cursor:done?'pointer':'not-allowed',background:done?'#c0892b':'#e6dcc6',color:done?'#fff':'#b3a98f'};
+      v.onContinueGroups=done?(()=>this.go('thirds')):(()=>{});
+      v.onFillAll=()=>this.fillAll();
+    }
+
+    // THIRDS
+    if(screen==='thirds'){
+      const sel=s.thirds||[];
+      v.thirdsCount=sel.length;
+      v.thirdsCountStyle={color:sel.length===8?'#1f8a60':'#c0892b'};
+      v.thirdsVM=this.thirdsList().map(x=>{ const on=sel.indexOf(x.team)>=0;
+        return {name:x.team,group:x.group,rankNum:this.rank(x.team),flagEl:this.flag(x.team),onToggle:()=>this.toggleThird(x.team),
+          style:{display:'flex',alignItems:'center',justifyContent:'space-between',gap:'10px',padding:'13px 14px',borderRadius:'12px',cursor:'pointer',background:on?'#fff':'#f4eee1',border:'2px solid '+(on?'#c0892b':'#e6dcc6'),transition:'all .15s'},
+          checkStyle:{width:'24px',height:'24px',borderRadius:'50%',flex:'0 0 auto',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'13px',fontWeight:700,background:on?'#c0892b':'transparent',color:'#fff',border:on?'none':'2px solid #d8ccb2'},
+          checkMark:on?'✓':''};
+      });
+      const ok=sel.length===8;
+      v.continueThirdsStyle={fontFamily:"'Ubuntu',sans-serif",fontWeight:500,fontSize:'14px',padding:'10px 20px',borderRadius:'10px',cursor:ok?'pointer':'not-allowed',background:ok?'#c0892b':'#e6dcc6',color:ok?'#fff':'#b3a98f'};
+      v.onContinueThirds=ok?(()=>this.go('bracket')):(()=>{});
+      v.onAutoThirds=()=>this.autoThirds();
+    }
+
+    // BRACKET
+    if(screen==='bracket'){
+      const b=s.bracket; const H=1160;
+      const rounds=[['R32','Round of 32'],['R16','Round of 16'],['QF','Quarterfinals'],['SF','Semifinals'],['F','Final']];
+      const bracketRow=[]; const bracketHeads=[];
+      const mkSide=(id,team)=>{ const picked=b[id]===team; const decided=!!b[id]; const empty=!team;
+        return {name:team||'—',flagEl:team?this.flag(team):React.createElement('span',{style:{color:'#cfc4ab'}},'·'),style:this.brSide(picked,decided&&!picked,empty,!!team),onPick:team?(()=>this.pick(id,team)):(()=>{})}; };
+      rounds.forEach((r,ri)=>{ const key=r[0],label=r[1],n=this.ROUND_N[key];
+        const matches=[];
+        for(let k=0;k<n;k++){ const id=key+'-'+k; const t=this.teamsOf(id,b); matches.push({id,cardStyle:{background:'#fff',border:'1px solid #e4dac3',borderRadius:'9px',overflow:'hidden',boxShadow:'0 2px 6px rgba(0,0,0,.04)'},top:mkSide(id,t[0]),bot:mkSide(id,t[1])}); }
+        bracketRow.push({isRound:true,isGutter:false,isChamp:false,key,matches,colStyle:{height:H+'px',width:'186px',display:'flex',flexDirection:'column',justifyContent:'space-around',flex:'0 0 auto'}});
+        bracketHeads.push({label,style:{width:'186px',flex:'0 0 auto',textAlign:'center'},labelStyle:{fontFamily:"'Roboto Condensed'",fontSize:'11px',fontWeight:700,letterSpacing:'.14em',color:'#b08a3a'}});
+        if(ri<rounds.length-1){ const cnt=n/2; const ch=H/n; const cells=[];
+          for(let c=0;c<cnt;c++)cells.push({style:{height:ch+'px',width:'28px',borderTop:'2px solid #d8c79e',borderRight:'2px solid #d8c79e',borderBottom:'2px solid #d8c79e',borderTopRightRadius:'10px',borderBottomRightRadius:'10px'}});
+          bracketRow.push({isRound:false,isGutter:true,isChamp:false,cells,colStyle:{height:H+'px',width:'28px',display:'flex',flexDirection:'column',justifyContent:'space-around',flex:'0 0 auto'}});
+          bracketHeads.push({label:'',style:{width:'28px',flex:'0 0 auto'},labelStyle:{}});
+        }
+      });
+      // final -> champ stub + champ
+      bracketRow.push({isRound:false,isGutter:true,isChamp:false,cells:[{style:{height:'2px',width:'30px',borderTop:'2px solid #d8c79e'}}],colStyle:{height:H+'px',width:'30px',display:'flex',flexDirection:'column',justifyContent:'center',flex:'0 0 auto'}});
+      bracketHeads.push({label:'',style:{width:'30px',flex:'0 0 auto'},labelStyle:{}});
+      bracketRow.push({isRound:false,isGutter:false,isChamp:true,colStyle:{height:H+'px',width:'196px',display:'flex',flexDirection:'column',justifyContent:'center',flex:'0 0 auto'}});
+      bracketHeads.push({label:'Champion',style:{width:'196px',flex:'0 0 auto',textAlign:'center'},labelStyle:{fontFamily:"'Roboto Condensed'",fontSize:'11px',fontWeight:700,letterSpacing:'.14em',color:'#b08a3a'}});
+      v.bracketRow=bracketRow; v.bracketHeads=bracketHeads;
+      v.champFlag=champ?this.flag(champ):React.createElement('span',{style:{opacity:.4}},'🏳️');
+      v.champName=champ||'TBD';
+      v.champBoxStyle={background:'#1b1d24',borderRadius:'14px',padding:'22px 14px',textAlign:'center',color:'#fff',boxShadow:'0 10px 30px rgba(0,0,0,.18)'};
+      const tpT=this.teamsOf('TP-0',b);
+      v.tpReady=!!(tpT[0]&&tpT[1]);
+      v.tpTop=mkSide('TP-0',tpT[0]);
+      v.tpBot=mkSide('TP-0',tpT[1]);
+      v.onSimulate=()=>this.simulate(); v.onResetBracket=()=>this.set({bracket:{}});
+      v.seeResultsStyle={fontFamily:"'Ubuntu',sans-serif",fontWeight:500,fontSize:'14px',padding:'9px 18px',borderRadius:'10px',cursor:champ?'pointer':'not-allowed',background:champ?'#1b1d24':'#e6dcc6',color:champ?'#fff':'#b3a98f'};
+      v.onSeeResults=champ?(()=>this.set({screen:'results'})):(()=>{});
+    }
+
+    // RESULTS
+    if(screen==='results'){
+      v.sharedView=!!s.shared;
+      v.hasChampion=!!champ; v.noChampion=!champ;
+      v.onEditBracket=()=>this.go('bracket');
+      if(champ){
+        const fin=this.finalist();
+        v.champFlag=this.flag(champ); v.champName=champ;
+        v.finalistFlag=fin?this.flag(fin):React.createElement('span',null,''); v.finalistName=fin||'—';
+        const nm=s.name||'Friend';
+        v.congrats=fin?('Congrats '+nm+", you predicted "+champ+' will beat '+fin+' in the final!'):('Congrats '+nm+', '+champ+' are your champions!');
+        const labelMap={R32:'Round of 32',R16:'Round of 16',QF:'Quarterfinal',SF:'Semifinal',F:'Final'};
+        const road=[]; ['R32','R16','QF','SF','F'].forEach(key=>{ for(let k=0;k<this.ROUND_N[key];k++){ const id=key+'-'+k; if(s.bracket[id]===champ){ const t=this.teamsOf(id,s.bracket); const opp=t.find(x=>x&&x!==champ); if(opp)road.push({round:labelMap[key],opp,flagEl:this.flag(opp)}); } } });
+        v.road=road;
+        const res=this.results();
+        v.winnersVM=this.GKEYS.map(g=>({g,team:res[g][0],flagEl:this.flag(res[g][0])}));
+        v.silverFlag=fin?this.flag(fin):React.createElement('span',null,'');
+        v.silverName=fin||'—';
+        const bz=this.bronze();
+        v.hasBronze=!!bz; v.noBronze=!bz;
+        v.bronzeFlag=bz?this.flag(bz):React.createElement('span',{style:{opacity:.4}},'🥉');
+        v.bronzeName=bz||'TBD';
+        v.shareLabel=s.copied?'✓ Link copied!':'🔗 Copy share link';
+        v.shareBtnStyle={fontFamily:"'Ubuntu',sans-serif",fontWeight:500,fontSize:'15px',padding:'11px 20px',borderRadius:'11px',cursor:'pointer',background:s.copied?'#1f8a60':'#c0892b',color:'#fff',whiteSpace:'nowrap'};
+        v.onShare=()=>this.share();
+      }
+    }
+    return v;
+  }
+}
+</script>
+</body>
+</html>
