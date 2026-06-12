@@ -244,6 +244,7 @@ export default function Home() {
   }
 
   function pickMatch(g: string, i: number, team: string) {
+    if (officialResults[`${g}-${i}`]) return // locked by official result
     set({ matchPicks: { ...state.matchPicks, [`${g}-${i}`]: team } })
   }
 
