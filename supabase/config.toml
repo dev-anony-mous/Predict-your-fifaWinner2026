@@ -1,0 +1,3 @@
+[functions.sync-results]
+verify_jwt = false
+schedule = "*/5 * * * *"
