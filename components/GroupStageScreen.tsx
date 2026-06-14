@@ -254,12 +254,14 @@ function MatchMode({
         const a = teams[p[0]]
         const b = teams[p[1]]
         const matchId = `${g}-${i}`
-        const isLocked = !!officialResults[matchId]
-        const w = officialResults[matchId] ?? state.matchPicks[matchId]
+        const officialResult = officialResults[matchId]
+        const isLocked = !!officialResult
+        const isDraw = officialResult === 'DRAW'
+        const w = officialResult ?? state.matchPicks[matchId]
 
         const teamBtn = (team: string) => ({
-          picked: w === team,
-          dim: !!w && w !== team,
+          picked: !isDraw && w === team,
+          dim: !isDraw && !!w && w !== team,
         })
 
         return (
@@ -272,23 +274,43 @@ function MatchMode({
               picked={teamBtn(a).picked}
               dim={teamBtn(a).dim}
               locked={isLocked}
+              isDraw={isDraw}
               onClick={() => !isLocked && onPickMatch(g, i, a)}
             />
-            <span
-              style={{
-                fontSize: 10,
-                color: '#b3a98f',
-                fontWeight: 700,
-                flex: '0 0 auto',
-              }}
-            >
-              v
-            </span>
+            {isDraw ? (
+              <span
+                style={{
+                  fontSize: 9,
+                  color: '#6a6256',
+                  fontWeight: 700,
+                  flex: '0 0 auto',
+                  background: '#ece5d4',
+                  border: '1px solid #c9c1b0',
+                  borderRadius: 4,
+                  padding: '2px 5px',
+                  letterSpacing: '.04em',
+                }}
+              >
+                DRAW
+              </span>
+            ) : (
+              <span
+                style={{
+                  fontSize: 10,
+                  color: '#b3a98f',
+                  fontWeight: 700,
+                  flex: '0 0 auto',
+                }}
+              >
+                v
+              </span>
+            )}
             <TeamBtn
               team={b}
               picked={teamBtn(b).picked}
               dim={teamBtn(b).dim}
               locked={isLocked}
+              isDraw={isDraw}
               onClick={() => !isLocked && onPickMatch(g, i, b)}
             />
           </div>
@@ -346,14 +368,23 @@ function TeamBtn({
   picked,
   dim,
   locked,
+  isDraw,
   onClick,
 }: {
   team: string
   picked: boolean
   dim: boolean
   locked: boolean
+  isDraw?: boolean
   onClick: () => void
 }) {
+  const bg = isDraw ? '#f0ece2' : picked ? '#c0892b' : '#f6f1e6'
+  const color = isDraw ? '#6a6256' : picked ? '#fff' : '#2a2c33'
+  const border = isDraw
+    ? '1px solid #c9c1b0'
+    : `1px solid ${picked ? '#c0892b' : '#ece2cf'}`
+  const outline = !isDraw && locked && picked ? '2px solid #a9741d' : 'none'
+
   return (
     <div
       onClick={onClick}
@@ -370,18 +401,21 @@ function TeamBtn({
         fontFamily: "'Ubuntu', sans-serif",
         fontWeight: 500,
         fontSize: 13,
-        background: picked ? '#c0892b' : '#f6f1e6',
-        color: picked ? '#fff' : '#2a2c33',
-        border: `1px solid ${picked ? '#c0892b' : '#ece2cf'}`,
+        background: bg,
+        color,
+        border,
         opacity: dim ? 0.5 : 1,
-        outline: locked && picked ? '2px solid #a9741d' : 'none',
+        outline,
       }}
     >
       <Flag name={team} height="0.9em" />
       <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {team}
       </span>
-      {locked && picked && (
+      {isDraw && (
+        <span style={{ marginLeft: 'auto', fontSize: 10, opacity: 0.6 }}>🔒</span>
+      )}
+      {!isDraw && locked && picked && (
         <span style={{ marginLeft: 'auto', fontSize: 10, opacity: 0.7 }}>🔒</span>
       )}
     </div>

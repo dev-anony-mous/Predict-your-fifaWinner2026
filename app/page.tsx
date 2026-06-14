@@ -278,7 +278,8 @@ export default function Home() {
       GKEYS.forEach(g =>
         PAIRS.forEach((p, i) => {
           const id = `${g}-${i}`
-          mp[id] = officialResults[id] ?? better(GROUPS[g][p[0]], GROUPS[g][p[1]])
+          const off = officialResults[id]
+          mp[id] = (off && off !== 'DRAW') ? off : better(GROUPS[g][p[0]], GROUPS[g][p[1]])
         })
       )
       set({ matchPicks: mp })

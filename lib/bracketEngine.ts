@@ -24,7 +24,8 @@ export function groupStandings(
     let done = 0
     PAIRS.forEach((p, i) => {
       const w = officialResults[`${g}-${i}`] ?? state.matchPicks[`${g}-${i}`]
-      if (w) { wins[w]++; done++ }
+      if (w === 'DRAW') { done++ }
+      else if (w) { wins[w]++; done++ }
     })
     const order = [...teams].sort((a, b) => (wins[b] - wins[a]) || rank(a) - rank(b))
     return { order, complete: done === 6 }

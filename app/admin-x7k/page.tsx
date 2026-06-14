@@ -257,11 +257,11 @@ export default function AdminPage() {
               />
             </div>
             <div>
-              <div style={{ fontSize: 12, color: '#8a8170', marginBottom: 4 }}>Winner team name</div>
+              <div style={{ fontSize: 12, color: '#8a8170', marginBottom: 4 }}>Winner (or DRAW)</div>
               <input
                 value={resultWinner}
                 onChange={e => setResultWinner(e.target.value)}
-                placeholder="Mexico"
+                placeholder="Mexico or DRAW"
                 style={inputStyle}
               />
             </div>
